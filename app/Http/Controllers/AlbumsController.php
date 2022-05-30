@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\Album;
+use App\Models\AlbumCategory;
+use App\Models\Category;
 use App\Models\Photo;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Http\{Request, Response};
@@ -39,6 +41,10 @@ class AlbumsController extends Controller
             $queryBuilder->where('album_name', 'like', "%".$request->input('album_name')."%");
         }
 
+        if( $request->has('category_id')) {
+            $queryBuilder->whereHas('categories', fn($q) => $q->where('category_id', '=', $request->input('category_id')));
+        }
+
         $albums = $queryBuilder->paginate(10);
 
         return view('albums.albums', ['albums' => $albums]);
@@ -52,7 +58,9 @@ class AlbumsController extends Controller
     public function create()
     {
         $album = new Album();
-        return view('albums.createalbum', [ 'album' => $album ]);
+
+        $categories = Category::orderBy('category_name')->get();
+        return view('albums.createalbum', [ 'album' => $album, 'categories' => $categories, 'selectedCategories' => [] ]);
     }
 
     /**
@@ -72,9 +80,14 @@ class AlbumsController extends Controller
         $res = $album->save();
 
         if($res) {
+            if($request->has('categories')) {
+                $album->categories()->attach($request->input('categories'));
+            }
             if($this->processFile($album->id, $request, $album )) {
                 $album->save();
             }
+
+            event(new \App\Events\NewAlbumCreated($album));
         }
 
 
@@ -104,7 +117,9 @@ class AlbumsController extends Controller
      */
     public function edit(Album $album)
     {
-        return view('albums.editalbum', [ 'album' => $album ]);
+        $categories = Category::orderBy('category_name')->get();
+        $selectedCategories = $album->categories->pluck('id')->toArray();
+        return view('albums.editalbum', [ 'album' => $album, 'categories' => $categories, 'selectedCategories' => $selectedCategories ]);
     }
 
     /**
@@ -133,6 +148,10 @@ class AlbumsController extends Controller
 
         $res = $album->save();
 
+        if($request->has('categories')) {
+            $album->categories()->sync($request->input('categories'));
+        }
+
         $message = "Album con nome=$album->album_name ";
         $message .= $res ? 'aggiornato' : 'non aggiornato';
         session()->flash('message', $message);
@@ -158,6 +177,9 @@ class AlbumsController extends Controller
         if( $res && $thumbNail && \Storage::exists($thumbNail)) {
             \Storage::delete($thumbNail);
         }
+
+        // Se non abbiamo la relazione OnDelete=Cascade, possiamo cancellare le relazioni con detach
+        // $album->categories()->detach($album->categories->pluck('id'));
 
         return $res;
     }

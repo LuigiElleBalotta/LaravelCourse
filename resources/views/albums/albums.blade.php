@@ -20,6 +20,7 @@
             <tr class="align-middle">
                 <th>Album Name</th>
                 <th>Thumb</th>
+                <th>Categories</th>
                 <th>Author</th>
                 <th>Date</th>
                 <th>&nbsp;</th>
@@ -32,6 +33,15 @@
                 <td>
                     @if($album->album_thumb)
                         <img width="120" src="{{ asset($album->path) }}" alt="{{ $album->album_name }}" title="{{ $album->album_name }}" />
+                    @endif
+                </td>
+                <td>
+                    @if($album->categories->count() > 0)
+                        @foreach($album->categories as $category)
+                            <span class="badge bg-primary">{{ $category->category_name }}</span>
+                        @endforeach
+                    @else
+                        No categories
                     @endif
                 </td>
                 <td>{{ $album->user->name }}</td>

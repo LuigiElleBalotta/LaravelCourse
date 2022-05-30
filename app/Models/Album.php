@@ -33,6 +33,10 @@ use App\Models\User;
  * @method static \Illuminate\Database\Eloquent\Builder|Album whereUpdatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Album whereUserId($value)
  * @mixin \Eloquent
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Category[] $categories
+ * @property-read int|null $categories_count
+ * @property-read mixed $path
+ * @property-read User $user
  */
 class Album extends Model
 {
@@ -61,7 +65,8 @@ class Album extends Model
     }
 
     public function categories() {
-        return $this->belongsToMany(Category::class, 'album_category', 'album_id', 'category_id');
+        return $this->belongsToMany(Category::class, 'album_category', 'album_id', 'category_id')
+                    ->withTimestamps();
     }
 
     public function getPathAttribute() {

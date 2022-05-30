@@ -29,6 +29,8 @@ use Illuminate\Database\Eloquent\Model;
  * @method static \Illuminate\Database\Eloquent\Builder|Photo whereName($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Photo whereUpdatedAt($value)
  * @mixin \Eloquent
+ * @property-read \App\Models\Album $album
+ * @property-read mixed $path
  */
 class Photo extends Model
 {

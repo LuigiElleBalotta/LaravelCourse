@@ -33,13 +33,13 @@ class DatabaseSeeder extends Seeder
 
         // Eseguiamo le insert
         // Crea per ogni utente 100 album e 100 foto per ogni album
-        $this->call(CategorySeeder::class);
+
         User::factory(200)->has(
             Album::factory(100)->has(
                 Photo::factory(100)
             )
         )->create();
-
+        $this->call(CategorySeeder::class);
         $this->call(AlbumCategory::class);
 
 

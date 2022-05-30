@@ -29,7 +29,7 @@
     </style>
 </head>
 <body class="pt-24">
-<nav class="navbar navbar-expand-md navbar-dark bg-dark fixed-top">
+<nav class="navbar navbar-expand-md navbar-dark bg-dark fixed-top" style="height: 60px;">
     <div class="container-fluid">
         <a class="navbar-brand" href="#">Gallery</a>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse"
@@ -47,11 +47,22 @@
                         <a class="nav-link" href="{{route('albums.index')}}">Albums</a>
                     </li>
                     <li class="nav-item">
+                        <a class="nav-link" href="{{route('categories.index')}}">Categories</a>
+                    </li>
+                    <li class="nav-item">
                         <a class="nav-link" href="{{route('albums.create')}}">New Album</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="{{route('photos.create')}}">New Image</a>
                     </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{route('categories.create')}}">New Category</a>
+                    </li>
+                    @if(Auth::user()->isAdmin())
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{route('admin.home')}}">Admin Homepage</a>
+                        </li>
+                    @endif
                 @endauth
             </ul>
             <form class="d-flex">
@@ -94,7 +105,7 @@
     </div>
 </nav>
 
-<main role="main" class="container-fluid">
+<main role="main" class="container-fluid" style="margin-top: 60px;">
     @yield('content')
     {{$slot ?? ''}}
 </main><!-- /.container -->
